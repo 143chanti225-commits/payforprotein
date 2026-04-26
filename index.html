@@ -34,7 +34,7 @@
             status.innerText = "Thinking...";
             
             // 2. Send to Gemini Brain (Simplified Example)
-            const response = await fetch('YOUR_WORKFLOW_URL_OR_API', {
+            const response = await fetch('https://payforprotein.app.n8n.cloud/webhook/faef2cf2-a071-4576-8bc1-7f0ec0c05c6c', {
                 method: 'POST',
                 body: JSON.stringify({ message: userQuery })
             });
