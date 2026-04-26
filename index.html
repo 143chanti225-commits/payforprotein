@@ -1,55 +1,45 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Pay for Protein AI</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        /* Keep your existing CSS here */
-        body { font-family: sans-serif; text-align: center; padding: 50px; background: #f4f9f4; }
-        #micBtn { font-size: 50px; border-radius: 50%; width: 100px; height: 100px; border: none; cursor: pointer; background: #4CAF50; color: white; }
-    </style>
-</head>
-<body>
-    <h1>🥗 Pay for Protein</h1>
-    <button id="micBtn">🎤</button>
-    <div id="status">Tap the mic to ask</div>
+<script>
+    const micBtn = document.getElementById('micBtn');
+    const status = document.getElementById('status');
 
-    <script>
-        const micBtn = document.getElementById('micBtn');
-        const status = document.getElementById('status');
-        const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const speechApi = new Recognition();
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!Recognition) {
+        alert("Speech Recognition not supported in this browser. Try Chrome.");
+    }
+    const speechApi = new Recognition();
 
-        micBtn.onclick = () => {
-            speechApi.start();
-            status.innerText = "Listening...";
-        };
+    micBtn.onclick = () => {
+        speechApi.start();
+        status.innerText = "Listening...";
+        micBtn.style.background = "#ff4444"; // Turns red while recording
+    };
 
-        speechApi.onresult = async (event) => {
-            const userQuery = event.results[0][0].transcript;
-            status.innerText = "Thinking...";
+    speechApi.onresult = async (event) => {
+        const userQuery = event.results[0][0].transcript;
+        status.innerText = "Thinking...";
+        micBtn.style.background = "#4CAF50"; 
 
-            try {
-                // IMPORTANT: Replace the URL below with your actual n8n PRODUCTION URL
-                const response = await fetch('https://payforprotein.app.n8n.cloud/webhook-test/faef2cf2-a071-4576-8bc1-7f0ec0c05c6c', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: userQuery })
-                });
+        try {
+            // REPLACE THE URL BELOW WITH YOUR n8n TEST WEBHOOK URL
+            const response = await fetch('https://payforprotein.app.n8n.cloud/webhook-test/faef2cf2-a071-4576-8bc1-7f0ec0c05c6c', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: userQuery })
+            });
 
-                const aiAnswer = await response.text(); 
-                speak(aiAnswer); 
-                
-            } catch (error) {
-                status.innerText = "Error: " + error;
-            }
-        };
-
-        function speak(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            window.speechSynthesis.speak(utterance);
-            status.innerText = "Tap mic to ask again";
+            const data = await response.json();
+            // Assuming Gemini sends back text in a field called 'output' or 'text'
+            // We will talk the whole response for now to test
+            speak(JSON.stringify(data)); 
+        } catch (error) {
+            status.innerText = "Error: " + error;
+            console.error(error);
         }
-    </script>
-</body>
-</html>
+    };
+
+    function speak(text) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        window.speechSynthesis.speak(utterance);
+        status.innerText = "Tap mic to ask again";
+    }
+</script>
