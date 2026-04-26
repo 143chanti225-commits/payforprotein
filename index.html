@@ -81,7 +81,7 @@
 
                 try {
                     // This is your n8n PRODUCTION URL
-                    const response = await fetch('https://payforprotein.app.n8n.cloud/webhook-test/faef2cf2-a071-4576-8bc1-7f0ec0c05c6c', {
+                    const response = await fetch('https://payforprotein.app.n8n.cloud/webhook/faef2cf2-a071-4576-8bc1-7f0ec0c05c6c', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ message: userQuery })
